@@ -14,10 +14,21 @@ import java.util.*;
  */
 public class TestLucene {
     @Test
-    public void testSearch() throws IOException, ParseException {
-        new SearchUtil().search("SendUser","a");
+    public void testNormalSearch() throws IOException, java.text.ParseException {
+        SearchUtil searchUtil =new SearchUtil();
+        searchUtil.search(searchUtil.getNormalQuery("SendUser","a"),20);
     }
 
+    @Test
+    public void testDateSearch() throws IOException, java.text.ParseException {
+        SearchUtil searchUtil =new SearchUtil();
+        Date startDate=new Date();
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(startDate);
+        calendar.add(calendar.DATE,2);
+        Date endDate = calendar.getTime();
+        searchUtil.search(searchUtil.getDateQuery(startDate,endDate),200);
+    }
 
     @Test
     public void getIndexCount() throws IOException {
@@ -61,10 +72,10 @@ public class TestLucene {
 
     public Date generateDate(Random rng,int length)
     {
-        Date date=new Date();//取时间
+        Date date=new Date();
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
-        calendar.add(calendar.DATE,rng.nextInt(10));//把日期往后增加一天.整数往后推,负数往前移动
+        calendar.add(calendar.DATE,rng.nextInt(10));
         return calendar.getTime();
     }
 }

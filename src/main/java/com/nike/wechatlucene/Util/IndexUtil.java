@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -45,7 +46,8 @@ public class IndexUtil {
                 doc.add(new Field("SendUser", weMessage.getSendUser(), Field.Store.YES, Field.Index.NOT_ANALYZED));
                 doc.add(new Field("Id", weMessage.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
                 doc.add(new Field("GroupId", weMessage.getGroupId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-                doc.add(new Field("indexDate",
+                //doc.add(new NumericField("SendDate",Field.Store.YES,true).setLongValue(weMessage.getSendDate().getTime()));
+                doc.add(new Field("SendDate",
                         DateTools.dateToString(weMessage.getSendDate(), DateTools.Resolution.SECOND),
                         Field.Store.YES,
                         Field.Index.NOT_ANALYZED));
