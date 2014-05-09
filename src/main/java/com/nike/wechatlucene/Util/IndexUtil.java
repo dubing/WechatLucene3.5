@@ -10,6 +10,7 @@ import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -42,7 +43,7 @@ public class IndexUtil {
 
             for (WeMessage weMessage : weMessages) {
                 doc = new Document();
-                doc.add(new Field("Content", weMessage.getContent(), Field.Store.NO, Field.Index.ANALYZED));
+                doc.add(new Field("Content", weMessage.getContent(), Field.Store.YES, Field.Index.ANALYZED));
                 doc.add(new Field("SendUser", weMessage.getSendUser(), Field.Store.YES, Field.Index.NOT_ANALYZED));
                 doc.add(new Field("Id", weMessage.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
                 doc.add(new Field("GroupId", weMessage.getGroupId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
@@ -72,6 +73,12 @@ public class IndexUtil {
     public void delete() throws IOException {
         IndexWriter indexWriter=new IndexWriter(directory, iwc);
         indexWriter.deleteAll();
+        indexWriter.close();
+    }
+
+    public void deleteQuery(Query query) throws IOException {
+        IndexWriter indexWriter=new IndexWriter(directory, iwc);
+        indexWriter.deleteDocuments(query);
         indexWriter.close();
     }
 

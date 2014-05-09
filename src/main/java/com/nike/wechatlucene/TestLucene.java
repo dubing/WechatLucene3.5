@@ -15,19 +15,25 @@ import java.util.*;
 public class TestLucene {
     @Test
     public void testNormalSearch() throws IOException, java.text.ParseException {
-        SearchUtil searchUtil =new SearchUtil();
-        searchUtil.search(searchUtil.getNormalQuery("SendUser","a"),20);
+        SearchUtil searchUtil = new SearchUtil();
+        searchUtil.search(searchUtil.getNormalQuery("Content", "c"), 200);
+    }
+
+    @Test
+    public void testWildcardSearch() throws IOException, java.text.ParseException {
+        SearchUtil searchUtil = new SearchUtil();
+        searchUtil.search(searchUtil.getWildcardQuery("Content", "*a"), 200);
     }
 
     @Test
     public void testDateSearch() throws IOException, java.text.ParseException {
-        SearchUtil searchUtil =new SearchUtil();
-        Date startDate=new Date();
+        SearchUtil searchUtil = new SearchUtil();
+        Date startDate = new Date();
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(startDate);
-        calendar.add(calendar.DATE,2);
+        calendar.add(calendar.DATE, 2);
         Date endDate = calendar.getTime();
-        searchUtil.search(searchUtil.getDateQuery(startDate,endDate),200);
+        searchUtil.search(searchUtil.getDateQuery(startDate, endDate), 200);
     }
 
     @Test
@@ -37,20 +43,21 @@ public class TestLucene {
 
     @Test
     public void addIndex() throws IOException {
-        List<WeMessage> weMessages = new ArrayList<WeMessage>() ;
         Random randomGenerator = new Random();
-        for(int i=0;i<=500;i++)
-        {
-            WeMessage weMessage = new WeMessage();
-            weMessage.setId(String.valueOf(i));
-            weMessage.setGroupId(String.valueOf(randomGenerator.nextInt(10)));
-            weMessage.setContent(generateString(randomGenerator,"abcdefghijklmn",10));
-            weMessage.setSendUser(generateString(randomGenerator,"abcdefghijklmn",1));
-            weMessage.setSendDate(generateDate(randomGenerator,10));
-            weMessages.add(weMessage);
+        for (int t = 0; t <= 99; t++) {
+            List<WeMessage> weMessages = new ArrayList<WeMessage>();
+            for (int i = 1; i <= 5000; i++) {
+                WeMessage weMessage = new WeMessage();
+                weMessage.setId(String.valueOf(i));
+                weMessage.setGroupId(String.valueOf(randomGenerator.nextInt(10)));
+                weMessage.setContent(generateString(randomGenerator, "abcdefghijklmn    ", 10));
+                weMessage.setSendUser(generateString(randomGenerator, "abcdefghijklmn", 1));
+                weMessage.setSendDate(generateDate(randomGenerator, 10));
+                weMessages.add(weMessage);
+            }
+            new IndexUtil().index(weMessages);
+            System.out.println(new IndexUtil().getIndexCount());
         }
-        new IndexUtil().index(weMessages);
-        System.out.println(new IndexUtil().getIndexCount());
     }
 
     @Test
@@ -59,23 +66,27 @@ public class TestLucene {
         System.out.println(new IndexUtil().getIndexCount());
     }
 
+    @Test
+    public void deleteQuery() throws IOException {
+        SearchUtil searchUtil = new SearchUtil();
+        new IndexUtil().deleteQuery(searchUtil.getNormalQuery("Content", "d"));
+        System.out.println(new IndexUtil().getIndexCount());
+    }
 
-    public String generateString(Random rng, String characters, int length)
-    {
+
+    public String generateString(Random rng, String characters, int length) {
         char[] text = new char[length];
-        for (int i = 0; i < length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             text[i] = characters.charAt(rng.nextInt(characters.length()));
         }
         return new String(text);
     }
 
-    public Date generateDate(Random rng,int length)
-    {
-        Date date=new Date();
+    public Date generateDate(Random rng, int length) {
+        Date date = new Date();
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
-        calendar.add(calendar.DATE,rng.nextInt(10));
+        calendar.add(calendar.DATE, rng.nextInt(10));
         return calendar.getTime();
     }
 }

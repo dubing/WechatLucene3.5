@@ -27,6 +27,11 @@ public class SearchUtil {
         return new TermQuery(new Term(key, value));
     }
 
+    public Query getWildcardQuery(String key, String value)  {
+        return new WildcardQuery(new Term(key, value));
+    }
+
+
     public Query getDateQuery(Date startDate,Date endDate)
     {
         String startDateStr = DateTools.dateToString(startDate,
@@ -45,14 +50,17 @@ public class SearchUtil {
         //QueryParser queryParser = new QueryParser(Version.LUCENE_47, "SendUser", new StandardAnalyzer(Version.LUCENE_47));
         TopDocs topDocs = indexSearcher.search(query, count);
         ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+        System.out.println("TotalCount:"+scoreDocs.length);
         for (ScoreDoc scoreDoc : scoreDocs) {
             Document document = indexSearcher.doc(scoreDoc.doc);
             System.out.println(
-                    String.format("ID:%s,GroupId:%s,SendUser:%s,SendDate:%s",
+                    String.format("ID:%s,GroupId:%s,SendUser:%s,SendDate:%s,Content:%s",
                             document.get("Id"),
                             document.get("GroupId"),
                             document.get("SendUser"),
-                            DateTools.stringToDate(document.get("SendDate"))));
+                            DateTools.stringToDate(document.get("SendDate")),
+                            document.get("Content")
+                    ));
         }
         indexReader.close();
     }
